@@ -109,7 +109,14 @@ func main() {
 	if err = clipboard.Init(); err != nil {
 		panic(err)
 	}
-	clipboard.Write(clipboard.FmtText, []byte(result))
+	clipboardMsg := `以下の字幕のストーリーを客観的に記述してください。
+ただし、客観的に記述するものの、感情表現や登場人物の価値観を表す重要なセリフっぽいものはそのまま書いちゃってください。
+また、時系列の改変や再構成はせず、展開をそのままなぞってください。
+
+---
+
+` + result
+	clipboard.Write(clipboard.FmtText, []byte(clipboardMsg))
 }
 
 func printHelp() {
