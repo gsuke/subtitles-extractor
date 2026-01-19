@@ -1,0 +1,14 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "remark-cli": "^12.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-preset-lint-consistent": "^6.0.1",
+    "remark-preset-lint-recommended": "^7.0.1",
+    "string-width": "^7.2.0"
+  },
+  "scripts": {
+    "lint": "remark .",
+    "format": "remark . -o"
+  }
+}
