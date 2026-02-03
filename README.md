@@ -1,4 +1,4 @@
-# jimakuparse
+# Subtitle Extractor
 
 字幕ファイルからテキスト部分のみを抽出するCLIスクリプト。
 
@@ -20,4 +20,10 @@ go run . <字幕ファイル>
 # 実行例
 go run . ./samples/sample1-in.ass
 go run . ./samples/sample2-in.srt
+```
+
+## テスト
+
+```shell
+go test -v
 ```
