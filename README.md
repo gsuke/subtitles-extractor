@@ -1,33 +1,23 @@
 # jimakuparse
 
-ASS字幕ファイルからテキスト部分のみを抽出するツール
+字幕ファイルからテキスト部分のみを抽出するCLIスクリプト。
+
+対応形式
+- ASS
+- SRT
 
 ## 使い方
 
-### 初回セットアップ
-
-```
-go mod tidy
+```shell
+go run . <字幕ファイル>
 ```
 
-### 実行
+## サンプルデータ
 
-```
-go run jimakuparse.go <ASSファイル>
-```
+`/samples` を参照。
 
-### サンプル
-
-入力
-```
-[Events]
-Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Dialogue: 0,0:00:05.00,0:00:15.00,Default,,0,0,0,,{\pos(300,1000)}こんにちは\N
-Dialogue: 0,0:00:25.00,0:00:35.00,Default,,0,0,0,,{\pos(300,1000)}今日はいい天気ですね\N
-```
-
-出力
-```
-こんにちは
-今日はいい天気ですね
+```shell
+# 実行例
+go run . ./samples/sample1-in.ass
+go run . ./samples/sample2-in.srt
 ```
