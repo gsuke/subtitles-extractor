@@ -30,6 +30,9 @@ func (e *SRTExtractor) Extract(content string) (string, error) {
 			continue
 		}
 
+		// ASS形式のメタデータが混入していることがあるので、それを除去
+		line = removeASSMetadata(line)
+
 		// それ以外はテキスト行
 		textParts = append(textParts, line)
 	}

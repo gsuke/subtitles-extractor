@@ -50,6 +50,7 @@ func extractTextFromDialogue(line string) string {
 }
 
 // ASS形式のメタデータ（{\pos(...)}など）を除去する
+// ※ SRT形式ファイルにも混入していることがある
 func removeASSMetadata(text string) string {
 	// {\...} 形式のタグを除去
 	re := regexp.MustCompile(`\{[^}]*\}`)
