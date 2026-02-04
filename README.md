@@ -23,14 +23,15 @@ go run . ep01.srt ep02.srt ep03.srt -o ./outdir
 
 `/samples` を参照。
 
-```shell
-# 実行例
-go run . ./samples/sample1-in.ass
-go run . ./samples/sample2-in.srt
-```
-
 ## テスト
 
 ```shell
+# 自動テスト
 go test -v
+
+# 手動テスト
+go run . # エラー(ヘルプ)
+go run . ./samples/sample1-in.ass # 標準出力 + クリップボード出力
+go run . ./samples/sample1-in.ass -o outdir # 単一ファイルのフォルダ出力
+go run . ./samples/sample1-in.ass ./samples/sample2-in.srt -o outdir # 単一ファイルのフォルダ出力
 ```

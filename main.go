@@ -31,15 +31,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 出力先フォルダが指定された場合は作成
-	if *outputDir != "" {
-		if err := os.MkdirAll(*outputDir, 0755); err != nil {
-			fmt.Fprintf(os.Stderr, "エラー: 出力先フォルダを作成できません: %v\n", err)
+	// 単一ファイルかつ -o 未指定なら標準出力して終了
+	if len(inputFiles) == 1 && *outputDir == "" {
+		result, err := processFile(inputFiles[0])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "エラー: %v\n", err)
 			os.Exit(1)
 		}
+		fmt.Println(result)
+		return
 	}
 
-	// 各ファイルを処理
+	// 複数ファイル処理: 出力先フォルダを作成
+	if err := os.MkdirAll(*outputDir, 0755); err != nil {
+		fmt.Fprintf(os.Stderr, "エラー: 出力先フォルダを作成できません: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 各ファイルを処理して出力フォルダに書き込み
 	for _, inputFile := range inputFiles {
 		result, err := processFile(inputFile)
 		if err != nil {
@@ -47,18 +56,12 @@ func main() {
 			continue
 		}
 
-		// 単一ファイルかつ -o 未指定なら標準出力
-		if len(inputFiles) == 1 && *outputDir == "" {
-			fmt.Println(result)
-		} else {
-			// 出力ファイルに書き込み
-			outputFile := getOutputPath(inputFile, *outputDir)
-			if err := os.WriteFile(outputFile, []byte(result+"\n"), 0644); err != nil {
-				fmt.Fprintf(os.Stderr, "エラー [%s]: 出力ファイルの書き込みに失敗: %v\n", inputFile, err)
-				continue
-			}
-			fmt.Printf("%s -> %s\n", inputFile, outputFile)
+		outputFile := getOutputPath(inputFile, *outputDir)
+		if err := os.WriteFile(outputFile, []byte(result+"\n"), 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "エラー [%s]: 出力ファイルの書き込みに失敗: %v\n", inputFile, err)
+			continue
 		}
+		fmt.Printf("%s -> %s\n", inputFile, outputFile)
 	}
 }
 
