@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 // 字幕抽出のインターフェース
@@ -12,6 +13,9 @@ type SubtitlesExtractor interface {
 
 // 字幕形式を自動判別して抽出する
 func DetectAndExtract(content string) (string, error) {
+	// BOMを除去
+	content = strings.TrimPrefix(content, "\xef\xbb\xbf")
+
 	extractors := []SubtitlesExtractor{
 		&ASSExtractor{},
 		&SRTExtractor{},

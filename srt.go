@@ -26,13 +26,7 @@ func (e *SRTExtractor) Extract(content string) (string, error) {
 		line = strings.TrimSpace(line)
 
 		// 空行、シーケンス番号、タイムスタンプ行はスキップ
-		if line == "" {
-			continue
-		}
-		if sequencePattern.MatchString(line) {
-			continue
-		}
-		if timestampPattern.MatchString(line) {
+		if line == "" || sequencePattern.MatchString(line) || timestampPattern.MatchString(line) {
 			continue
 		}
 
