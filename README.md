@@ -48,3 +48,13 @@ go run . ./samples/sample1-in.ass ./samples/sample2-in.srt -o extracted # 単一
 Claude Code の Skills 機能を使って、字幕ファイルのストーリーを説明させることができます。
 
 > `/extracted` 内の字幕ストーリーを説明して、 `/explained` に出力して
+
+## サブコマンド
+
+### concat
+
+複数のテキストファイルを連結して、Markdown形式で出力できます。
+
+```
+go run ./cmd/concat ./cmd/concat/samples/*
+```
