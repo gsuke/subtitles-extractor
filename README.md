@@ -1,4 +1,4 @@
-# Subtitle Extractor
+# Subtitles Extractor
 
 字幕ファイルからテキスト部分のみを抽出するCLIスクリプト。
 
@@ -38,3 +38,7 @@ go run . ./samples/sample1-in.ass # 標準出力 + クリップボード出力
 go run . ./samples/sample1-in.ass -o outdir # 単一ファイルのフォルダ出力
 go run . ./samples/sample1-in.ass ./samples/sample2-in.srt -o outdir # 単一ファイルのフォルダ出力
 ```
+
+## 開発
+
+新しい字幕形式に対応する場合は、 `extractor.go` の `SubtitlesExtractor` インターフェースを実装し、`DetectAndExtract` にそれを追加してください。

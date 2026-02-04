@@ -1,4 +1,4 @@
-module subtitleextractor
+module subtitlesextractor
 
 go 1.24.3
 

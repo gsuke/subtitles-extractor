@@ -5,14 +5,14 @@ import (
 )
 
 // 字幕抽出のインターフェース
-type SubtitleExtractor interface {
+type SubtitlesExtractor interface {
 	Extract(content string) (string, error)
 	CanExtract(content string) bool
 }
 
 // 字幕形式を自動判別して抽出する
 func DetectAndExtract(content string) (string, error) {
-	extractors := []SubtitleExtractor{
+	extractors := []SubtitlesExtractor{
 		&ASSExtractor{},
 		&SRTExtractor{},
 	}
