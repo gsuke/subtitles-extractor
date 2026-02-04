@@ -3,62 +3,106 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
-	"golang.design/x/clipboard"
+	flag "github.com/spf13/pflag" // 引数とフラグの順番を自由にさせるため導入 (SetInterspersed)
 )
 
 func main() {
-	// コマンドライン引数のチェック
-	if len(os.Args) < 2 {
+	// フラグの定義
+	flag.SetInterspersed(true)
+	outputDir := flag.StringP("outputdir", "o", "", "出力先フォルダ（入力ファイルが複数の場合は必須）")
+	flag.Usage = printHelp
+	flag.Parse()
+
+	// 入力ファイルの取得
+	inputFiles := flag.Args()
+
+	// 入力ファイル数0のとき、終了
+	if len(inputFiles) == 0 {
 		printHelp()
 		os.Exit(1)
 	}
 
-	filename := os.Args[1]
+	// 入力ファイルが複数の場合は -o オプションが必須
+	if len(inputFiles) > 1 && *outputDir == "" {
+		fmt.Fprintln(os.Stderr, "エラー: 複数ファイル入力時は -o オプションで出力先フォルダを指定してください")
+		os.Exit(1)
+	}
 
-	// ファイルを読み込む
+	// 出力先フォルダが指定された場合は作成
+	if *outputDir != "" {
+		if err := os.MkdirAll(*outputDir, 0755); err != nil {
+			fmt.Fprintf(os.Stderr, "エラー: 出力先フォルダを作成できません: %v\n", err)
+			os.Exit(1)
+		}
+	}
+
+	// 各ファイルを処理
+	for _, inputFile := range inputFiles {
+		result, err := processFile(inputFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "エラー [%s]: %v\n", inputFile, err)
+			continue
+		}
+
+		// 単一ファイルかつ -o 未指定なら標準出力
+		if len(inputFiles) == 1 && *outputDir == "" {
+			fmt.Println(result)
+		} else {
+			// 出力ファイルに書き込み
+			outputFile := getOutputPath(inputFile, *outputDir)
+			if err := os.WriteFile(outputFile, []byte(result+"\n"), 0644); err != nil {
+				fmt.Fprintf(os.Stderr, "エラー [%s]: 出力ファイルの書き込みに失敗: %v\n", inputFile, err)
+				continue
+			}
+			fmt.Printf("%s -> %s\n", inputFile, outputFile)
+		}
+	}
+}
+
+// ファイルを処理して抽出結果を返す
+func processFile(filename string) (string, error) {
 	content, err := os.ReadFile(filename)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "エラー: ファイルを開けません: %v\n", err)
-		os.Exit(1)
+		return "", fmt.Errorf("ファイルを開けません: %v", err)
 	}
 
-	// 字幕形式を自動判別して抽出
 	result, err := DetectAndExtract(string(content))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "エラー: 処理に失敗しました: %v\n", err)
-		os.Exit(1)
+		return "", fmt.Errorf("処理に失敗しました: %v", err)
 	}
 
-	// 結果を出力
-	fmt.Println(result)
+	return result, nil
+}
 
-	// クリップボードにコピー
-	if err = clipboard.Init(); err != nil {
-		panic(err)
-	}
-	clipboardMsg := `以下の字幕のストーリーを客観的に記述してください。
-ただし、客観的に記述するものの、感情表現や登場人物の価値観を表す重要なセリフっぽいものはそのまま書いちゃってください。
-また、時系列の改変や再構成はせず、展開をそのままなぞってください。
-
----
-
-` + result
-	clipboard.Write(clipboard.FmtText, []byte(clipboardMsg))
+// 出力ファイルパスを生成する（拡張子を.txtに変更）
+func getOutputPath(inputFile, outputDir string) string {
+	base := filepath.Base(inputFile)
+	ext := filepath.Ext(base)
+	nameWithoutExt := strings.TrimSuffix(base, ext)
+	return filepath.Join(outputDir, nameWithoutExt+".txt")
 }
 
 func printHelp() {
 	help := `使い方:
-  go run . <字幕ファイル>
+  go run . [オプション] <字幕ファイル...>
 
+オプション:
+%s
 例:
+  # 単一ファイル（標準出力 + クリップボード出力）
   go run . anime01.ass
-  go run . anime01.srt
+
+  # 複数ファイル（出力先フォルダ指定）
+  go run . *.ass -o ./outdir
+  go run . ep01.srt ep02.srt ep03.srt -o ./outdir
 
 説明:
-  字幕ファイル（ASS/SRT形式）からテキスト部分のみを抽出し、出力します。
+  字幕ファイル（ASS/SRT形式）からテキスト部分のみを抽出します。
   メタデータ（ASSの\posなど）は除去され、純粋なテキストが出力されます。
-  加えて、クリップボードにコピーされます。`
+`
 
-	fmt.Println(help)
+	fmt.Printf(help, flag.CommandLine.FlagUsages())
 }

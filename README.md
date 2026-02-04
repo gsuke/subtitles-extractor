@@ -9,7 +9,14 @@
 ## 使い方
 
 ```shell
-go run . <字幕ファイル>
+go run . [オプション] <字幕ファイル...>
+
+# 単一ファイル（標準出力 + クリップボード出力）
+go run . anime01.ass
+
+# 複数ファイル（出力先フォルダ指定）
+go run . *.ass -o ./outdir
+go run . ep01.srt ep02.srt ep03.srt -o ./outdir
 ```
 
 ## サンプルデータ
