@@ -115,8 +115,8 @@ func printHelp() {
   go run . anime01.ass
 
   # 複数ファイル（出力先フォルダ指定）
-  go run . *.ass -o ./outdir
-  go run . ep01.srt ep02.srt ep03.srt -o ./outdir
+  go run . *.ass -o ./extracted
+  go run . ep01.srt ep02.srt ep03.srt -o ./extracted
 
 説明:
   字幕ファイル（ASS/SRT形式）からテキスト部分のみを抽出します。

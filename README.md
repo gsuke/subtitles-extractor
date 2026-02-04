@@ -15,8 +15,8 @@ go run . [オプション] <字幕ファイル...>
 go run . anime01.ass
 
 # 複数ファイル（出力先フォルダ指定）
-go run . *.ass -o ./outdir
-go run . ep01.srt ep02.srt ep03.srt -o ./outdir
+go run . *.ass -o ./extracted
+go run . ep01.srt ep02.srt ep03.srt -o ./extracted
 ```
 
 単一ファイルを指定した場合は、クリップボードに、LLMに渡すためのプロンプト込みで出力されます。
@@ -35,10 +35,16 @@ go test -v
 # 手動テスト
 go run . # エラー(ヘルプ)
 go run . ./samples/sample1-in.ass # 標準出力 + クリップボード出力
-go run . ./samples/sample1-in.ass -o outdir # 単一ファイルのフォルダ出力
-go run . ./samples/sample1-in.ass ./samples/sample2-in.srt -o outdir # 単一ファイルのフォルダ出力
+go run . ./samples/sample1-in.ass -o extracted # 単一ファイルのフォルダ出力
+go run . ./samples/sample1-in.ass ./samples/sample2-in.srt -o extracted # 単一ファイルのフォルダ出力
 ```
 
 ## 開発
 
 新しい字幕形式に対応する場合は、 `extractor.go` の `SubtitlesExtractor` インターフェースを実装し、`DetectAndExtract` にそれを追加してください。
+
+## Claude Code によるストーリー説明
+
+Claude Code の Skills 機能を使って、字幕ファイルのストーリーを説明させることができます。
+
+> `/extracted` 内の字幕ストーリーを説明して、 `/explained` に出力して
