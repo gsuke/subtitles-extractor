@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	flag "github.com/spf13/pflag" // 引数とフラグの順番を自由にさせるため導入 (SetInterspersed)
+	"golang.design/x/clipboard"
 )
 
 func main() {
@@ -38,7 +39,22 @@ func main() {
 			fmt.Fprintf(os.Stderr, "エラー: %v\n", err)
 			os.Exit(1)
 		}
+
 		fmt.Println(result)
+
+		// クリップボード出力
+		if err = clipboard.Init(); err != nil {
+			panic(err)
+		}
+		clipboardMsg := `以下の字幕のストーリーを客観的に記述してください。
+ただし、客観的に記述するものの、感情表現や登場人物の価値観を表す重要なセリフっぽいものはそのまま書いて問題ありません。
+また、時系列の改変や再構成はせず、展開を順番通りそのままなぞってください。
+
+---
+
+` + result
+		clipboard.Write(clipboard.FmtText, []byte(clipboardMsg))
+
 		return
 	}
 
